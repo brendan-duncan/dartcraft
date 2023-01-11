@@ -10,8 +10,9 @@ publish_to: none
 
 dependencies:
   vector_math: ^2.1.4
+  image: ^4.0.0
   webgpu:
-    git: https://github.com/brendan-duncan/dart_webgpu.git
+    path: ../dart_webgpu
 
 dev_dependencies:
   lints: ^2.0.1
