@@ -1,5 +1,6 @@
-import 'package:vector_math/vector_math.dart';
+import 'package:dartcraft/math/vector4.dart';
 
+import 'math/matrix4.dart';
 import 'globals.dart';
 import 'transform.dart';
 
@@ -10,8 +11,9 @@ class Camera extends Transform {
   Matrix4 _projection = Matrix4.zero();
   bool _worldToViewDirty = true;
   bool _modelViewProjectionDirty = true;
-  Matrix4 _worldToView = Matrix4.zero();
+  Matrix4 _worldToView = Matrix4.identity();
   Matrix4 _modelViewProjection = Matrix4.zero();
+  Vector4 backgroundColor = Vector4.zero();
 
   Camera([Transform? parent])
     : super(parent) {
@@ -50,8 +52,7 @@ class Camera extends Transform {
 
   Matrix4 get projection {
     if (_projectionDirty) {
-      _projection = makePerspectiveMatrix(fov * degrees2Radians,
-        aspect, 0.3, 1000);
+      _projection.setPerspective(fov, aspect, 0.3, 1000.0);
     }
     return _projection;
   }
@@ -78,7 +79,7 @@ class Camera extends Transform {
   Matrix4 get worldToView {
     if (this._worldToViewDirty) {
       final t = worldTransform;
-      _worldToView.copyInverse(t);
+      _worldToView..setFrom(t)..invert();
       _worldToViewDirty = false;
     }
     return _worldToView;
@@ -87,7 +88,7 @@ class Camera extends Transform {
   Matrix4 get modelViewProjection {
     if (_modelViewProjectionDirty) {
       _modelViewProjectionDirty = false;
-      _modelViewProjection = projection.multiplied(worldToView);
+      Matrix4.multiply(projection, worldToView, this._modelViewProjection);
     }
     return _modelViewProjection;
   }

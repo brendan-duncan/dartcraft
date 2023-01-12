@@ -1,14 +1,15 @@
-import 'package:vector_math/vector_math.dart';
+import 'math/vector3.dart';
+import 'math/matrix4.dart';
 
 class Transform {
   Transform? parent;
   List<Transform> children = [];
-  Vector3 _position = new Vector3.zero();
-  Vector3 _rotation = new Vector3.zero();
+  Vector3 _position = Vector3.zero();
+  Vector3 _rotation = Vector3.zero();
   bool _localDirty = true;
   bool _worldDirty = true;
-  Matrix4 _transform = new Matrix4.identity();
-  Matrix4 _worldTransform = new Matrix4.identity();
+  Matrix4 _transform = Matrix4.identity();
+  Matrix4 _worldTransform = Matrix4.identity();
 
   Transform([this.parent]) {
     parent?.children.add(this);
@@ -27,10 +28,8 @@ class Transform {
     localDirty = true;
   }
 
-  void setPosition(num x, num y, num z) {
-    _position..x = x.toDouble()
-    ..y = y.toDouble()
-    ..z = z.toDouble();
+  void setPosition(double x, double y, double z) {
+    _position.setValues(x, y, z);
     localDirty = true;
   }
 
@@ -41,10 +40,8 @@ class Transform {
     localDirty = true;
   }
 
-  void setRotation(num x, num y, num z) {
-    _rotation..x = x.toDouble()
-      ..y = y.toDouble()
-      ..z = z.toDouble();
+  void setRotation(double x, double y, double z) {
+    _rotation.setValues(x, y, z);
     localDirty = true;
   }
 
@@ -71,8 +68,8 @@ class Transform {
   Matrix4 get transform {
     if (this._localDirty) {
       _localDirty = false;
-      _transform.setTranslation(position);
-      _transform.rotate3(rotation);
+      _transform.setTranslate(position);
+      _transform.rotateEuler(rotation);
     }
     return _transform;
   }
@@ -85,7 +82,7 @@ class Transform {
     if (_worldDirty) {
       final t = transform;
       final p = parent!.worldTransform;
-      _worldTransform = p.multiplied(t);
+      Matrix4.multiply(p, t, this._worldTransform);
       _worldDirty = false;
     }
 
@@ -94,33 +91,21 @@ class Transform {
 
   Vector3 getWorldRight([Vector3? out]) {
     final t = worldTransform;
-    final v4 = t.getColumn(0);
-    out ??= Vector3.zero();
-    out.setValues(v4.x, v4.y, v4.z);
-    return out;
+    return t.getColumn3(0, out);
   }
 
   Vector3 getWorldUp([Vector3? out]) {
     final t = worldTransform;
-    final v4 = t.getColumn(1);
-    out ??= Vector3.zero();
-    out.setValues(v4.x, v4.y, v4.z);
-    return out;
+    return t.getColumn3(1, out);
   }
 
   Vector3 getWorldForward([Vector3? out]) {
     final t = worldTransform;
-    final v4 = t.getColumn(2);
-    out ??= Vector3.zero();
-    out.setValues(v4.x, v4.y, v4.z);
-    return out;
+    return t.getColumn3(2, out);
   }
 
   Vector3 getWorldPosition([Vector3? out]) {
     final t = worldTransform;
-    final v4 = t.getColumn(3);
-    out ??= Vector3.zero();
-    out.setValues(v4.x, v4.y, v4.z);
-    return out;
+    return t.getColumn3(3, out);
   }
 }

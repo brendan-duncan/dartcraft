@@ -26,7 +26,7 @@ class Chunk extends SceneObject {
 
     final x = coord.x * VoxelData.chunkWidth;
     final z = coord.z * VoxelData.chunkWidth;
-    setPosition(x, 0, z);
+    setPosition(x.toDouble(), 0, z.toDouble());
 
     chunkData = world.worldData.requestChunk(x, z, true)!;
     chunkData.chunk = this;

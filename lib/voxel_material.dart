@@ -137,7 +137,7 @@ class VoxelMaterial {
     final modelViewProjection = camera.modelViewProjection;
 
     device.queue.writeBuffer(viewUniformBuffer, 0,
-        modelViewProjection.storage.buffer.asUint8List());
+        modelViewProjection.data.buffer);
   }
 
   void startRender(passEncoder) {
@@ -157,8 +157,7 @@ class VoxelMaterial {
     final mesh = chunk.mesh;
     final transform = chunk.worldTransform;
 
-    device.queue.writeBuffer(modelBuffer, 0,
-        transform.storage.buffer.asUint8List());
+    device.queue.writeBuffer(modelBuffer, 0, transform.data.buffer);
 
     passEncoder.setBindGroup(0, bindGroup);
     passEncoder.setVertexBuffer(0, mesh!.buffers['points']!);

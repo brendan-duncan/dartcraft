@@ -1,4 +1,4 @@
-import 'package:vector_math/vector_math.dart';
+import 'math/vector3.dart';
 
 class VoxelMod {
   final Vector3 position;

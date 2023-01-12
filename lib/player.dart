@@ -1,8 +1,7 @@
-import 'package:vector_math/vector_math.dart';
-
 import 'camera.dart';
 import 'globals.dart';
 //import 'input.dart';
+import 'math/vector3.dart';
 import 'transform.dart';
 import 'world.dart';
 

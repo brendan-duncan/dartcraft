@@ -9,7 +9,6 @@ environment:
 publish_to: none
 
 dependencies:
-  vector_math: ^2.1.4
   image: ^4.0.0
   webgpu:
     path: ../dart_webgpu

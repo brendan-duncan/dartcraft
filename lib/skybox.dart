@@ -1,11 +1,15 @@
+import 'package:webgpu/webgpu.dart';
+
 import 'camera.dart';
 import 'gpu/cube_mesh.dart';
 import 'gpu/texture.dart';
+import 'math/matrix4.dart';
+import 'math/vector3.dart';
 
-import 'package:webgpu/webgpu.dart';
-import 'package:vector_math/vector_math.dart';
 
 class Skybox {
+  static final skyboxSize = Vector3(100.0, 100.0, 100.0);
+
   GPUDevice device;
   bool initialized = false;
   late GPUSampler sampler;
@@ -109,14 +113,16 @@ class Skybox {
 
     final modelViewProjection = camera.modelViewProjection;
     transform.setIdentity();
-    transform.setTranslation(camera.getWorldPosition(this.cameraPosition));
-    transform.scale(100.0, 100.0, 100.0);
-    transform = modelViewProjection.multiplied(transform);
+    transform.setTranslate(camera.getWorldPosition(cameraPosition));
+    transform.scale(skyboxSize);
+    Matrix4.multiply(modelViewProjection, transform, transform);
 
     device.queue.writeBuffer(
         this.uniformBuffer,
         0,
-        transform.storage.buffer.asUint8List());
+        transform.data.buffer,
+        transform.data.offsetInBytes,
+        transform.data.lengthInBytes);
 
     encoder..setPipeline(pipeline)
     ..setBindGroup(0, uniformBindGroup)

@@ -1,7 +1,5 @@
 import 'dart:math';
 
-import 'package:vector_math/vector_math.dart';
-
 import 'biome_attributes.dart';
 import 'block_type.dart';
 import 'camera.dart';
@@ -9,6 +7,8 @@ import 'chunk.dart';
 import 'chunk_coord.dart';
 import 'globals.dart';
 import 'math/noise.dart';
+import 'math/vector3.dart';
+import 'math/vector4.dart';
 import 'player.dart';
 import 'settings.dart';
 import 'transform.dart';
@@ -31,7 +31,7 @@ class World extends Transform {
   final playerLastChunkCoord = ChunkCoord(0, 0);
   final night = Vector4(0, 0, 77/255, 1);
   final day = Vector4(0, 1, 250/255, 1);
-  final globalLightLevel = 1;
+  final globalLightLevel = 1.0;
   final seed = 12345;
   final settings = Settings();
   
@@ -329,12 +329,11 @@ class World extends Transform {
   }
 
   void setGlobalLightLevel() {
-    //material.setProperty("minGlobalLightLevel", VoxelData.minLightLevel);
-    //material.setProperty("maxGlobalLightLevel", VoxelData.maxLightLevel);
-    //material.setProperty("globalLightLevel", globalLightLevel);
+    //material.setProperty('minGlobalLightLevel', VoxelData.minLightLevel);
+    //material.setProperty('maxGlobalLightLevel', VoxelData.maxLightLevel);
+    //material.setProperty('globalLightLevel', globalLightLevel);
 
-    //camera.backroundColor =
-        //lerp(night, day, globalLightLevel);
+    Vector4.lerp(night, day, globalLightLevel, camera.backgroundColor);
   }
 
   void checkViewDistance() {
@@ -379,11 +378,11 @@ class World extends Transform {
   }
 
   bool isChunkInWorld(num x, num z) =>
-    // An "infinite" world.
+    // An 'infinite' world.
     true;
 
   bool isVoxelInWorld(x, y, z) {
-    // An "infinite" world, at least in X and Z
+    // An 'infinite' world, at least in X and Z
     return y >= 0 && y < VoxelData.chunkHeight;
   }
 
