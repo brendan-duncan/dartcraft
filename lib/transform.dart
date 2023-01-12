@@ -2,26 +2,16 @@ import 'package:vector_math/vector_math.dart';
 
 class Transform {
   Transform? parent;
-  List<Transform> children;
-  late Vector3 _position;
-  late Vector3 _rotation;
-  bool _localDirty;
-  bool _worldDirty;
-  late Matrix4 _transform;
-  late Matrix4 _worldTransform;
+  List<Transform> children = [];
+  Vector3 _position = new Vector3.zero();
+  Vector3 _rotation = new Vector3.zero();
+  bool _localDirty = true;
+  bool _worldDirty = true;
+  Matrix4 _transform = new Matrix4.identity();
+  Matrix4 _worldTransform = new Matrix4.identity();
 
-  Transform([this.parent])
-    : children = const []
-    , _localDirty = true
-    , _worldDirty = true {
-    this._position = new Vector3.zero();
-    this._rotation = new Vector3.zero();
-    this._transform = new Matrix4.identity();
-    this._worldTransform = new Matrix4.identity();
-
-    if (parent != null) {
-      parent!.children.add(this);
-    }
+  Transform([this.parent]) {
+    parent?.children.add(this);
   }
 
   addChild(c) {

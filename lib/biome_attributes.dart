@@ -4,10 +4,11 @@ class BiomeAttributes {
   num scale;
   num terrainHeight;
   num terrainScale;
-  num surfaceBlock;
-  num subSurfaceBlock;
+  int surfaceBlock;
+  int subSurfaceBlock;
   int majorFloraIndex;
   num majorFloraZoneScale;
+  num majorFloraZoneThreshold;
   num majorFloraPlacementScale;
   num majorFloraPlacementThreshold;
   bool placeMajorFlora;
@@ -15,9 +16,12 @@ class BiomeAttributes {
   num minHeight;
   List<Lode> lodes;
 
-  BiomeAttributes({this.name = '', this.offset = 0, this.scale = 1, this.terrainHeight = 0,
+  BiomeAttributes({this.name = '', this.offset = 0, this.scale = 1,
+    this.terrainHeight = 0,
     this.terrainScale = 1, this.subSurfaceBlock = 0, this.surfaceBlock = 0,
-    this.majorFloraIndex = 0, this.majorFloraZoneScale = 1.3, this.majorFloraPlacementScale = 15,
+    this.majorFloraIndex = 0, this.majorFloraZoneScale = 1.3,
+    this.majorFloraZoneThreshold = 0.8,
+    this.majorFloraPlacementScale = 15,
     this.majorFloraPlacementThreshold = 0.8, this.placeMajorFlora = true,
     this.maxHeight = 12, this.minHeight = 5, this.lodes = const []});
 }

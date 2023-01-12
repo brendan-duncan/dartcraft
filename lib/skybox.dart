@@ -1,94 +1,129 @@
+import 'camera.dart';
 import 'gpu/cube_mesh.dart';
 import 'gpu/texture.dart';
 
-import 'package:webgpu/webgpu.dart' as wgpu;
+import 'package:webgpu/webgpu.dart';
 import 'package:vector_math/vector_math.dart';
 
 class Skybox {
-  wgpu.Device device;
-  late wgpu.Sampler sampler;
+  GPUDevice device;
+  bool initialized = false;
+  late GPUSampler sampler;
   late Texture texture;
   late Matrix4 transform;
   late Vector3 cameraPosition;
   late CubeMesh cube;
-  late wgpu.BindGroupLayout bindGroupLayout;
-  late wgpu.PipelineLayout pipelineLayout;
-  late wgpu.ShaderModule shaderModule;
-  late wgpu.RenderPipeline pipeline;
+  late GPUBindGroupLayout bindGroupLayout;
+  late GPUPipelineLayout pipelineLayout;
+  late GPUShaderModule shaderModule;
+  late GPURenderPipeline pipeline;
+  late GPUBuffer uniformBuffer;
+  late GPUBindGroup uniformBindGroup;
 
-  Skybox(this.device) {
-    sampler = wgpu.Sampler(device, minFilter: wgpu.FilterMode.linear,
-      magFilter: wgpu.FilterMode.linear);
+  Skybox(this.device);
+  
+  Future<void> initialize() async {
     texture = Texture(device);
+    await texture.loadFile('resources/sky2.jpg');
+    sampler = GPUSampler(device, minFilter: GPUFilterMode.linear,
+        magFilter: GPUFilterMode.linear);
     transform = Matrix4.zero();
     cameraPosition = Vector3.zero();
     cube = CubeMesh(device);
-    
+
     bindGroupLayout = device.createBindGroupLayout(entries: [
-      wgpu.BindGroupLayoutEntry(
-          binding: 0,
-          visibility: wgpu.ShaderStage.vertex,
-          buffer: wgpu.BufferBindingLayout(
-              type: wgpu.BufferBindingType.uniform)),
-      wgpu.BindGroupLayoutEntry(
-          binding: 1,
-          visibility: wgpu.ShaderStage.fragment,
-          sampler: wgpu.SamplerBindingLayout(
-              type: wgpu.SamplerBindingType.filtering)),
-      wgpu.BindGroupLayoutEntry(
-          binding: 2,
-          visibility: wgpu.ShaderStage.fragment,
-          texture: wgpu.TextureBindingLayout(
-              sampleType: wgpu.TextureSampleType.float))
+      {
+        'binding': 0,
+        'visibility': GPUShaderStage.vertex,
+        'buffer': { 'type': 'uniform' }
+      },
+      {
+        'binding': 1,
+        'visibility': GPUShaderStage.fragment,
+        'sampler': {'type': 'filtering'}
+      },
+      {
+        'binding': 2,
+        'visibility': GPUShaderStage.fragment,
+        'texture': {'sampleType': 'float'}
+      }
     ]);
-    
+
     pipelineLayout = device.createPipelineLayout([bindGroupLayout]);
-    
+
     shaderModule = device.createShaderModule(code: _skyShader);
 
-    /*pipeline = device.createRenderPipeline(wgpu.RenderPipelineDescriptor(
-      layout: pipelineLayout,
-      vertex: wgpu.VertexState(
-        module: this.shaderModule,
-        entryPoint: 'vertexMain',
-        buffers: [
-          wgpu.BufferState(
-            arrayStride: CubeMesh.vertexSize,
-            attributes: [
+    pipeline = device.createRenderPipeline(descriptor: {
+      'layout': pipelineLayout,
+      'vertex': {
+        'module': shaderModule,
+        'entryPoint': 'vertexMain',
+        'buffers': [
+          {
+            'arrayStride': CubeMesh.vertexSize,
+            'attributes': [
               {
-                wgpu.Buffer
                 // position
-                shaderLocation: 0,
-                offset: CubeMesh.positionOffset,
-                format: 'float32x4'
+                'shaderLocation': 0,
+                'offset': CubeMesh.positionOffset,
+                'format': 'float32x4'
               }
             ]
-          )
-        ]
-      },
-      fragment: {
-        module: this.shaderModule,
-        entryPoint: 'fragmentMain',
-        targets: [
-          {
-            format: 'bgra8unorm'
           }
         ]
       },
-      primitive: {
-        topology: 'triangle-list',
-        cullMode: 'none'
+      'fragment': {
+        'module': shaderModule,
+        'entryPoint': 'fragmentMain',
+        'targets': [{'format': 'bgra8unorm'}]
       },
-      depthStencil: {
-        depthWriteEnabled: false,
-        depthCompare: 'less',
-        format: 'depth24plus-stencil8'
+      'primitive': {
+        'topology': 'triangle-list',
+        'cullMode': 'none'
       },
-    ));*/
+      'depthStencil': {
+        'depthWriteEnabled': false,
+        'depthCompare': 'less',
+        'format': 'depth24plus-stencil8'
+      },
+    });
+
+    const uniformBufferSize = 4 * 16; // 4x4 matrix
+    uniformBuffer = device.createBuffer(size: uniformBufferSize,
+        usage: GPUBufferUsage.uniform | GPUBufferUsage.copyDst);
+
+    uniformBindGroup = device.createBindGroup(
+        layout: pipeline.getBindGroupLayout(0),
+        entries: [
+          {'binding': 0, 'resource': this.uniformBuffer},
+          {'binding': 1, 'resource': this.sampler},
+          {'binding': 2, 'resource': texture.createView()}
+        ]);
+    initialized = true;
   }
-  
-  Future<void> initialize() async {
-    await texture.loadFile('resources/sky2.jpg');
+
+  void draw(Camera camera, GPURenderPassEncoder encoder) {
+    if (!this.initialized) {
+      return;
+    }
+
+    final modelViewProjection = camera.modelViewProjection;
+    transform.setIdentity();
+    transform.setTranslation(camera.getWorldPosition(this.cameraPosition));
+    transform.scale(100.0, 100.0, 100.0);
+    transform = modelViewProjection.multiplied(transform);
+
+    device.queue.writeBuffer(
+        this.uniformBuffer,
+        0,
+        transform.storage.buffer.asUint8List());
+
+    encoder..setPipeline(pipeline)
+    ..setBindGroup(0, uniformBindGroup)
+    ..setVertexBuffer(0, cube.vertexBuffer)
+    ..draw(36, 1, 0, 0);
+
+    return;
   }
 }
 

@@ -27,25 +27,26 @@ class VoxelData {
   static const worldSizeInBlocks = worldSizeInChunks * chunkWidth;
   static const chunkWidthHeight = chunkWidth * chunkHeight;
   static const chunkWidthWidth = chunkWidth * chunkWidth;
+  static const chunkWidthHeightWidth = chunkWidthHeight * chunkWidth;
 
   static const voxelVerts = [
-      [0, 0, 0],
-      [1, 0, 0],
-      [1, 1, 0],
-      [0, 1, 0],
-      [0, 0, 1],
-      [1, 0, 1],
-      [1, 1, 1],
-      [0, 1, 1],
+      [0.0, 0.0, 0.0],
+      [1.0, 0.0, 0.0],
+      [1.0, 1.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0],
+      [1.0, 0.0, 1.0],
+      [1.0, 1.0, 1.0],
+      [0.0, 1.0, 1.0],
   ];
 
   static const voxelNormals = [
-      [0, 0, -1], // Back
-      [0, 0, 1], // Front
-      [0, 1, 0], // Top
-      [0, -1, 0], // Bottom
-      [-1, 0, 0], // Left
-      [1, 0, 0] // Right
+      [0.0, 0.0, -1.0], // Back
+      [0.0, 0.0, 1.0], // Front
+      [0.0, 1.0, 0.0], // Top
+      [0.0, -1.0, 0.0], // Bottom
+      [-1.0, 0.0, 0.0], // Left
+      [1.0, 0.0, 0.0] // Right
   ];
 
   static const voxelTris = [

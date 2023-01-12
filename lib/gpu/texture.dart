@@ -1,30 +1,38 @@
 import 'package:image/image.dart' as img;
-import 'package:webgpu/webgpu.dart' as wgpu;
+import 'package:webgpu/webgpu.dart';
 import 'texture_util.dart';
 
 class Texture {
-  wgpu.Device device;
-  wgpu.Texture? gpu;
-  int state;
+  GPUDevice device;
+  GPUTexture? gpu;
+  bool loaded;
 
   Texture(this.device)
-    : state = 0 {
+    : loaded = false {
+  }
+
+  Texture.renderBuffer(this.device, int width, int height,
+      GPUTextureFormat format)
+    : loaded = false {
+    create(width, height, format: format,
+        usage: GPUTextureUsage.renderAttachment);
   }
 
   void destroy() {
     gpu?.destroy();
     gpu = null;
+    loaded = false;
   }
 
   void create(int width, int height,
-      {wgpu.TextureFormat format = wgpu.TextureFormat.rgba8unorm,
-        wgpu.TextureUsage usage = wgpu.TextureUsage.textureBinding}) {
+      {GPUTextureFormat format = GPUTextureFormat.rgba8unorm,
+        GPUTextureUsage usage = GPUTextureUsage.textureBinding}) {
     gpu?.destroy();
 
     gpu = device.createTexture(width: width, height: height,
         format: format, usage: usage);
 
-    state = 1;
+    loaded = true;
   }
 
   Future<void> loadFile(String path) async {
@@ -34,6 +42,10 @@ class Texture {
     }
 
     gpu = TextureUtil.get(device).generateMipmap(image);
-    state = 1;
+    loaded = true;
+  }
+
+  GPUTextureView createView() {
+    return gpu!.createView();
   }
 }

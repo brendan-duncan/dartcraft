@@ -87,7 +87,7 @@ class Camera extends Transform {
   Matrix4 get modelViewProjection {
     if (_modelViewProjectionDirty) {
       _modelViewProjectionDirty = false;
-      _modelViewProjection = worldToView.multiplied(projection);
+      _modelViewProjection = projection.multiplied(worldToView);
     }
     return _modelViewProjection;
   }

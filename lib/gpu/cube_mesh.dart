@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:webgpu/webgpu.dart' as wgpu;
+import 'package:webgpu/webgpu.dart';
 
 class CubeMesh {
   /// Byte size of one cube vertex.
@@ -11,13 +11,13 @@ class CubeMesh {
   /// Byte offset of cube uv attribute.
   static const uvOffset = 4 * 8;
 
-  wgpu.Device device;
-  late wgpu.Buffer vertexBuffer;
+  GPUDevice device;
+  late GPUBuffer vertexBuffer;
 
   CubeMesh(this.device) {
     vertexBuffer = device.createBuffer(
       size: _cubeVertexArray.lengthInBytes,
-      usage: wgpu.BufferUsage.vertex,
+      usage: GPUBufferUsage.vertex,
       mappedAtCreation: true
     );
 

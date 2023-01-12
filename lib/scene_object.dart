@@ -7,7 +7,7 @@ class SceneObject extends Transform {
   //MeshData? meshData;
   //Material? material;
 
-  SceneObject(this.name, Transform? parent)
+  SceneObject(this.name, [Transform? parent])
     : active = true
     , super(parent);
 }

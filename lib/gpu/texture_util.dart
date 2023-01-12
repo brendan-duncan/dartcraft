@@ -1,10 +1,10 @@
 import 'dart:math';
 
 import 'package:image/image.dart' as img;
-import 'package:webgpu/webgpu.dart' as wgpu;
+import 'package:webgpu/webgpu.dart';
 
 class TextureUtil {
-  static TextureUtil get(wgpu.Device device) {
+  static TextureUtil get(GPUDevice device) {
     var t = TextureUtil._devices[device];
     if (t != null) {
       return t;
@@ -14,29 +14,33 @@ class TextureUtil {
     return t;
   }
 
-  wgpu.Device device;
-  late wgpu.Sampler mipmapSampler;
-  late wgpu.RenderPipeline mipmapPipeline;
+  GPUDevice device;
+  late GPUSampler mipmapSampler;
+  late GPURenderPipeline mipmapPipeline;
 
   TextureUtil(this.device) {
-    mipmapSampler = device.createSampler(minFilter: wgpu.FilterMode.linear);
+    mipmapSampler = device.createSampler(minFilter: GPUFilterMode.linear);
     
     final shaderModule = device.createShaderModule(code: _mipmapShader);
 
-    mipmapPipeline = device.createRenderPipeline(wgpu.RenderPipelineDescriptor(
-      vertex: wgpu.VertexState(module: shaderModule, entryPoint: 'vertexMain'),
-      fragment: wgpu.FragmentState(module: shaderModule, entryPoint: 'fragmentMain',
-        targets: [wgpu.ColorTargetState(format: wgpu.TextureFormat.rgba8unorm)
-        ]),
-      primitive: wgpu.PrimitiveState(topology: wgpu.PrimitiveTopology.triangleStrip,
-        stripIndexFormat: wgpu.IndexFormat.uint32),
-    ));
+    mipmapPipeline = device.createRenderPipeline(descriptor: {
+      'vertex': {'module': shaderModule, 'entryPoint': 'vertexMain'},
+      'fragment': {
+          'module': shaderModule,
+          'entryPoint': 'fragmentMain',
+          'targets': [{'format': GPUTextureFormat.rgba8unorm}]
+      },
+      'primitive': {
+          'topology': GPUPrimitiveTopology.triangleStrip,
+          'stripIndexFormat': GPUIndexFormat.uint32
+      }
+    });
   }
 
   static int getNumMipmapLevels(int w, int h) =>
     (log(max(w, h)) / log(2)).floor() + 1;
 
-  generateMipmap(img.Image image) {
+  GPUTexture generateMipmap(img.Image image) {
     var width = image.width;
     var height = image.height;
 
@@ -48,17 +52,20 @@ class TextureUtil {
 
     final texture = device.createTexture(width: width,
       height: height,
-      format: wgpu.TextureFormat.rgba8unorm,
-      usage: wgpu.TextureUsage.copyDst | wgpu.TextureUsage.textureBinding |
-          wgpu.TextureUsage.renderAttachment,
+      format: 'rgba8unorm',
+      usage: GPUTextureUsage.copyDst | GPUTextureUsage.textureBinding |
+          GPUTextureUsage.renderAttachment,
       mipLevelCount: mipLevelCount);
 
-    device.queue.writeTexture(destination:
-        wgpu.ImageCopyTexture(texture: texture),
+    device.queue.writeTexture(
+        destination: {'texture': texture},
         data: image.toUint8List(),
-        dataLayout: wgpu.ImageDataLayout(bytesPerRow: image.rowStride,
-          rowsPerImage: image.height),
-        width: image.width, height: image.height);
+        dataLayout: {
+          'bytesPerRow': image.rowStride,
+          'rowsPerImage': image.height
+        },
+        width: image.width,
+        height: image.height);
 
     final commandEncoder = device.createCommandEncoder();
 
@@ -68,22 +75,23 @@ class TextureUtil {
       final bindGroup = device.createBindGroup(
         layout: bindGroupLayout,
         entries: [
-          wgpu.BindGroupEntry(binding: 0, resource: mipmapSampler),
-          wgpu.BindGroupEntry(binding: 1, resource: texture.createView(
-            baseMipLevel: i - 1, mipLevelCount: 1))
+          {'binding': 0, 'resource': mipmapSampler},
+          {'binding': 1, 'resource': texture.createView(
+            baseMipLevel: i - 1, mipLevelCount: 1)}
         ]);
 
-      final passEncoder = commandEncoder.beginRenderPass(
-          wgpu.RenderPassDescriptor(
-        colorAttachments: [wgpu.RenderPassColorAttachment(
-          view: texture.createView(
-            baseMipLevel: i,
-            mipLevelCount: 1
-          ),
-          loadOp: wgpu.LoadOp.load,
-          storeOp: wgpu.StoreOp.store)
-        ]
-      ));
+      final passEncoder = commandEncoder.beginRenderPass({
+            'colorAttachments': [
+              {
+                'view': texture.createView(
+                    baseMipLevel: i,
+                    mipLevelCount: 1
+                ),
+                'loadOp': 'load',
+                'storeOp': 'store'
+              }
+            ]
+          });
 
       passEncoder.setPipeline(this.mipmapPipeline);
       passEncoder.setBindGroup(0, bindGroup);
@@ -99,7 +107,7 @@ class TextureUtil {
     return texture;
   }
 
-  static final Map<wgpu.Device, TextureUtil> _devices = {};
+  static final Map<GPUDevice, TextureUtil> _devices = {};
 }
 
 const _mipmapShader = '''
