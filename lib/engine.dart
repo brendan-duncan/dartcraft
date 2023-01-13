@@ -4,6 +4,7 @@ import 'globals.dart';
 import 'gpu/texture.dart';
 import 'camera.dart';
 import 'chunk.dart';
+import 'input.dart';
 import 'player.dart';
 import 'skybox.dart';
 import 'world.dart';
@@ -30,7 +31,7 @@ class Engine {
   Future<void> initialize() async {
     Globals.engine = this;
     Globals.window = window;
-    //Globals.input = Input(window);
+    Globals.input = Input(window);
 
     adapter = await GPUAdapter.request();
     device = await adapter.requestDevice();

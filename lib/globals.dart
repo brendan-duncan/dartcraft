@@ -2,6 +2,7 @@ import 'package:webgpu/webgpu.dart';
 
 import 'camera.dart';
 import 'engine.dart';
+import 'input.dart';
 import 'player.dart';
 import 'world.dart';
 
@@ -15,6 +16,7 @@ class Globals {
   static Player? player;
   static World? world;
   static GPUWindow? window;
+  static Input? input;
 
   static int now() =>
     DateTime.now().millisecondsSinceEpoch;

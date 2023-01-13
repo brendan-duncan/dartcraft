@@ -1,6 +1,6 @@
 import 'camera.dart';
 import 'globals.dart';
-//import 'input.dart';
+import 'input.dart';
 import 'math/vector3.dart';
 import 'transform.dart';
 import 'world.dart';
@@ -46,7 +46,7 @@ class Player extends Transform {
 
   World get world => Globals.world!;
   
-  //Input get input => input;
+  Input get input => Globals.input!;
 
   update() {
     calculateVelocity();
@@ -65,23 +65,23 @@ class Player extends Transform {
 
     placeCursorBlock();
 
-    /*isSprinting = input.getKeyDown(Input.KeyCode.LeftShift);
+    isSprinting = input.getKeyDown(KeyCode.leftShift);
 
-    if (isGrounded && input.getKeyDown(Input.KeyCode.Space)) {
+    if (isGrounded && input.getKeyDown(KeyCode.space)) {
       jumpRequest = true;
     }
 
-    if (input.getKeyDown(Input.KeyCode.A)) {
+    if (input.getKeyDown(KeyCode.a)) {
       horizontal = -1;
-    } else if (input.getKeyDown(Input.KeyCode.D)) {
+    } else if (input.getKeyDown(KeyCode.d)) {
       horizontal = 1;
     } else {
       horizontal = 0;
     }
 
-    if (input.getKeyDown(Input.KeyCode.W)) {
+    if (input.getKeyDown(KeyCode.w)) {
       vertical = -1;
-    } else if (input.getKeyDown(Input.KeyCode.S)) {
+    } else if (input.getKeyDown(KeyCode.s)) {
       vertical = 1;
     } else {
       vertical = 0;
@@ -94,7 +94,7 @@ class Player extends Transform {
       if ((t - lastTime) > editDelay) {
         if (placeActive) {
           final chunk = world.getChunkFromPosition(placePosition);
-          if (chunk) {
+          if (chunk != null) {
             chunk.editVoxel(placePosition[0], placePosition[1],
                 placePosition[2], 7);
             lastTime = t;
@@ -106,14 +106,19 @@ class Player extends Transform {
       if ((t - lastTime) > editDelay) {
         if (highlightActive) {
           final chunk = world.getChunkFromPosition(highlightPosition);
-          if (chunk) {
+          if (chunk != null) {
             chunk.editVoxel(highlightPosition[0], highlightPosition[1],
                 highlightPosition[2], 0);
             lastTime = t;
           }
         }
       }
-    }*/
+    }
+
+    if (input.getKeyDown(KeyCode.z)) {
+      mouseHorizontal = input.deltaX * turnSpeed;
+      mouseVertical = input.deltaY * turnSpeed;
+    }
   }
 
   placeCursorBlock() {
