@@ -19,7 +19,7 @@ class TextureUtil {
   late GPURenderPipeline mipmapPipeline;
 
   TextureUtil(this.device) {
-    mipmapSampler = device.createSampler(minFilter: GPUFilterMode.linear);
+    mipmapSampler = device.createSampler(minFilter: 'linear');
     
     final shaderModule = device.createShaderModule(code: _mipmapShader);
 
@@ -28,11 +28,11 @@ class TextureUtil {
       'fragment': {
           'module': shaderModule,
           'entryPoint': 'fragmentMain',
-          'targets': [{'format': GPUTextureFormat.rgba8unorm}]
+          'targets': [{'format': 'rgba8unorm'}]
       },
       'primitive': {
-          'topology': GPUPrimitiveTopology.triangleStrip,
-          'stripIndexFormat': GPUIndexFormat.uint32
+          'topology': 'triangle-strip',
+          'stripIndexFormat': 'uint32'
       }
     });
   }
@@ -67,9 +67,8 @@ class TextureUtil {
         width: image.width,
         height: image.height);
 
-    final commandEncoder = device.createCommandEncoder();
-
     final bindGroupLayout = mipmapPipeline.getBindGroupLayout(0);
+    final commandEncoder = device.createCommandEncoder();
 
     for (var i = 1; i < mipLevelCount; ++i) {
       final bindGroup = device.createBindGroup(
@@ -77,32 +76,30 @@ class TextureUtil {
         entries: [
           {'binding': 0, 'resource': mipmapSampler},
           {'binding': 1, 'resource': texture.createView(
-            baseMipLevel: i - 1, mipLevelCount: 1)}
+            baseMipLevel: i - 1)}
         ]);
 
-      final passEncoder = commandEncoder.beginRenderPass({
+      final mipView = texture.createView(baseMipLevel: i);
+
+      commandEncoder.beginRenderPass({
             'colorAttachments': [
               {
-                'view': texture.createView(
-                    baseMipLevel: i,
-                    mipLevelCount: 1
-                ),
+                'view': mipView,
                 'loadOp': 'load',
                 'storeOp': 'store'
               }
             ]
-          });
-
-      passEncoder.setPipeline(this.mipmapPipeline);
-      passEncoder.setBindGroup(0, bindGroup);
-      passEncoder.draw(3, 1, 0, 0);
-      passEncoder.end();
+          })
+      ..setPipeline(this.mipmapPipeline)
+      ..setBindGroup(0, bindGroup)
+      ..draw(3)
+      ..end();
 
       width = (width / 2).ceil();
       height = (height / 2).ceil();
     }
 
-    this.device.queue.submit([ commandEncoder.finish() ]);
+    this.device.queue.submit([commandEncoder.finish()]);
 
     return texture;
   }

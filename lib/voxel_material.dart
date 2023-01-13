@@ -23,8 +23,6 @@ class VoxelMaterial {
 
     texture = Texture(device);
 
-    texture.loadFile("resources/BlockAtlas.png");
-
     bindGroupLayout = device.createBindGroupLayout(entries: [
         {
           // ViewUniforms
@@ -133,6 +131,10 @@ class VoxelMaterial {
     _modelBuffers.clear();
   }
 
+  Future<void> initialize() async {
+    await texture.loadFile("resources/BlockAtlas.png");
+  }
+
   void updateCamera(camera) {
     final modelViewProjection = camera.modelViewProjection;
 
@@ -196,11 +198,14 @@ class VoxelMaterial {
       entries: [
         {
           'binding': 0,
-          'resource': { 'buffer': viewUniformBuffer }
+          // TODO: buffer resource binding
+          //'resource': { 'buffer': viewUniformBuffer }
+          'resource': viewUniformBuffer
         },
         {
           'binding': 1,
-          'resource': {  'buffer': modelBuffer }
+          //'resource': {  'buffer': modelBuffer }
+          'resource': modelBuffer
         },
         {
           'binding': 2,

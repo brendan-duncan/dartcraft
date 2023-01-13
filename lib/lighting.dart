@@ -21,8 +21,8 @@ void castNaturalLight(ChunkData chunkData, int x, int z, int startY) {
 
   for (var y = startY; y > -1; --y) {
     final index = chunkData.getVoxelIndex(x, y, z);
-    final voxelID = chunkData.voxelId[index];
-    final properties = Globals.world!.blockTypes[voxelID];
+    final voxelId = chunkData.voxelId[index];
+    final properties = Globals.world!.blockTypes[voxelId];
 
     if (obstructed) {
       chunkData.voxelLight[index] = 0;

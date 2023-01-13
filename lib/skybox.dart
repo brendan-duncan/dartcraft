@@ -6,7 +6,6 @@ import 'gpu/texture.dart';
 import 'math/matrix4.dart';
 import 'math/vector3.dart';
 
-
 class Skybox {
   static final skyboxSize = Vector3(100.0, 100.0, 100.0);
 

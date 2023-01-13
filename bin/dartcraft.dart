@@ -11,5 +11,6 @@ void main() async {
   while (!window.shouldQuit) {
     window.pollEvents();
     engine.update();
+    engine.render();
   }
 }

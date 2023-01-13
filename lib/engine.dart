@@ -36,7 +36,6 @@ class Engine {
     device = await adapter.requestDevice();
 
     context = window.createContext(device);
-
     context.configure();
 
     depthTexture = Texture.renderBuffer(device,
@@ -45,17 +44,17 @@ class Engine {
     colorAttachment = {
       'loadOp': GPULoadOp.clear,
       'clearValue': [0.1, 0.1, 0.1, 0.1],
-      'storeOp': GPUStoreOp.store
+      'storeOp': 'store'
     };
 
     depthAttachment = {
       'view': depthTexture.createView(),
-      'depthLoadOp': GPULoadOp.clear,
+      'depthLoadOp': 'clear',
       'depthClearValue': 1,
-      'depthStoreOp': GPUStoreOp.store,
-      'stencilLoadOp': GPULoadOp.clear,
+      'depthStoreOp': 'store',
+      'stencilLoadOp': 'clear',
       'stencilClearValue': 0,
-      'stencilStoreOp': GPUStoreOp.store
+      'stencilStoreOp': 'store'
     };
 
     renderPassDescriptor = {
@@ -72,20 +71,13 @@ class Engine {
     world = World();
 
     voxelMaterial = VoxelMaterial(device);
+    await voxelMaterial.initialize();
 
     world.start();
 
     initialized = true;
 
     Globals.time = Globals.now() * 0.1;
-  }
-
-  void update() {
-    final lastTime = Globals.time;
-    Globals.time = Globals.now() * 0.01;
-    Globals.deltaTime = Globals.time - lastTime;
-    _update();
-    _render();
   }
 
   /*updateCanvasResolution() {
@@ -98,7 +90,11 @@ class Engine {
     }
   }*/
 
-  _update() {
+  update() {
+    final lastTime = Globals.time;
+    Globals.time = Globals.now() * 0.01;
+    Globals.deltaTime = Globals.time - lastTime;
+
     /*if (autoResizeCanvas) {
       updateCanvasResolution();
     }*/
@@ -111,7 +107,7 @@ class Engine {
     voxelMaterial.updateCamera(camera);
   }
 
-  _render() {
+  render() {
     colorAttachment['view'] = context.getCurrentTextureView();
 
     final commandEncoder = device.createCommandEncoder();

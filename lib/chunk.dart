@@ -87,7 +87,7 @@ class Chunk extends SceneObject {
     }
   }
 
-  int getVoxelIDFromGlobalPosition(num x, num y, num z) {
+  int getVoxelIdFromGlobalPosition(num x, num y, num z) {
     final pos = position;
     final xCheck = x.floor() - pos.x.floor();
     final yCheck = y.floor() - pos.y.floor();
@@ -108,8 +108,8 @@ class Chunk extends SceneObject {
     final yi = y.floor();
     final zi = z.floor();
 
-    final voxelID = chunkData.getVoxelId(xi, yi, zi);
-    final properties = world.blockTypes[voxelID];
+    final voxelId = chunkData.getVoxelId(xi, yi, zi);
+    final properties = world.blockTypes[voxelId];
 
     final pos = position;
     final px = pos.x.floor();
@@ -123,13 +123,13 @@ class Chunk extends SceneObject {
       final ny = py + yi + VoxelData.faceChecks[p][1];
       final nz = pz + zi + VoxelData.faceChecks[p][2];
 
-      final neighborID = worldData.getVoxelId(nx, ny, nz);
-      final neighborProperties = world.blockTypes[neighborID];
+      final neighborId = worldData.getVoxelId(nx, ny, nz);
+      final neighborProperties = world.blockTypes[neighborId];
 
       //final neighbor = voxel.neighbors.get(p);
       final tri = VoxelData.voxelTris[p];
 
-      if (world.blockTypes[neighborID].renderNeighborFaces) {
+      if (world.blockTypes[neighborId].renderNeighborFaces) {
         vertices.addAll([
           x + VoxelData.voxelVerts[tri[0]][0],
           y + VoxelData.voxelVerts[tri[0]][1],

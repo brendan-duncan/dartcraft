@@ -1,4 +1,4 @@
-import 'dart:math';
+//import 'dart:math';
 
 import 'biome_attributes.dart';
 import 'block_type.dart';
@@ -7,6 +7,7 @@ import 'chunk.dart';
 import 'chunk_coord.dart';
 import 'globals.dart';
 import 'math/noise.dart';
+import 'math/random.dart';
 import 'math/vector3.dart';
 import 'math/vector4.dart';
 import 'player.dart';
@@ -206,7 +207,7 @@ class World extends Transform {
   Player get player => Globals.player!;
 
   void start() {
-    random = new Random(seed);
+    random = Random(seed);
 
     loadWorld();
     setGlobalLightLevel();
@@ -358,7 +359,7 @@ class World extends Transform {
         if (isChunkInWorld(x, z)) {
           var chunk = getChunk(x, z);
           if (chunk == null) {
-            chunk = new Chunk(ChunkCoord(x, z), this);
+            chunk = Chunk(ChunkCoord(x, z), this);
             setChunk(x, z, chunk);
           }
 
@@ -391,7 +392,7 @@ class World extends Transform {
     return blockTypes[voxel].isSolid;
   }
 
-  int getVoxelID(x, y, z) {
+  int getVoxelId(x, y, z) {
     return worldData.getVoxelId(x, y, z);
   }
 
