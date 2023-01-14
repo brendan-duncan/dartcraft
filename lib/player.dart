@@ -89,7 +89,7 @@ class Player extends Transform {
 
     final editDelay = 2;
 
-    if (input.getMouseButtonDown(0)) {
+    /*if (input.getMouseButtonDown(0)) {
       final t = Globals.time;
       if ((t - lastTime) > editDelay) {
         if (placeActive) {
@@ -101,7 +101,7 @@ class Player extends Transform {
           }
         }
       }
-    } else if (input.getMouseButtonDown(2)) {
+    } else*/ if (input.getMouseButtonDown(0)) {
       final t = Globals.time;
       if ((t - lastTime) > editDelay) {
         if (highlightActive) {
@@ -115,7 +115,7 @@ class Player extends Transform {
       }
     }
 
-    if (input.getKeyDown(KeyCode.z)) {
+    if (input.getMouseButtonDown(2)) {
       mouseHorizontal = input.deltaX * turnSpeed;
       mouseVertical = input.deltaY * turnSpeed;
     }
