@@ -11,8 +11,4 @@ publish_to: none
 dependencies:
   image: ^4.0.0
   webgpu:
-    path: ../dart_webgpu
-
-dev_dependencies:
-  lints: ^2.0.1
-  test: ^1.16.0
+    git: https://github.com/brendan-duncan/dart_webgpu
