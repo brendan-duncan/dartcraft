@@ -40,7 +40,7 @@ class Engine {
     context.configure();
 
     depthTexture = Texture.renderBuffer(device,
-        window.width, window.height, GPUTextureFormat.depth24plusStencil8);
+        window.width, window.height, GPUTextureFormat.depth24plus);
 
     colorAttachment = {
       'loadOp': GPULoadOp.clear,
@@ -52,10 +52,7 @@ class Engine {
       'view': depthTexture.createView(),
       'depthLoadOp': 'clear',
       'depthClearValue': 1,
-      'depthStoreOp': 'store',
-      'stencilLoadOp': 'clear',
-      'stencilClearValue': 0,
-      'stencilStoreOp': 'store'
+      'depthStoreOp': 'store'
     };
 
     renderPassDescriptor = {

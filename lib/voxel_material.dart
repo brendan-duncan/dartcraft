@@ -119,7 +119,7 @@ class VoxelMaterial {
       'depthStencil': {
         'depthWriteEnabled': true,
         'depthCompare': 'less',
-        'format': 'depth24plus-stencil8'
+        'format': 'depth24plus'
       }
     });
 

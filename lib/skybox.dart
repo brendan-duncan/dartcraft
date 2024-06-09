@@ -87,7 +87,7 @@ class Skybox {
       'depthStencil': {
         'depthWriteEnabled': false,
         'depthCompare': 'less',
-        'format': 'depth24plus-stencil8'
+        'format': 'depth24plus'
       },
     });
 
