@@ -36,7 +36,7 @@ class Engine {
     adapter = await GPUAdapter.request();
     device = await adapter.requestDevice();
 
-    context = window.createContext(device);
+    context = window.createContext(adapter, device);
     context.configure();
 
     depthTexture = Texture.renderBuffer(device,
